@@ -4,7 +4,6 @@ export { HopscotchService } from './src/hopscotch.service';
 export interface TourStep {
   stepNum: number;
   stepDef: any;
-  routeEnabled?: boolean;
 }
 
 export interface ReadyOptions {

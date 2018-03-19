@@ -34,8 +34,7 @@ export class HopscotchService {
       steps,
       (result: any, obj: TourStep, index) => {
         result[obj.stepNum] = {
-          stepDef: obj.stepDef,
-          routeEnabled: obj.routeEnabled
+          stepDef: obj.stepDef
         };
         return result;
       },

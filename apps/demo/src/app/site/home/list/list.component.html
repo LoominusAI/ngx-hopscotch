@@ -1,0 +1,14 @@
+<div class="card">
+  <div class="list-group">
+    <a *ngFor="let item of items" class="list-group-item list-group-item-action flex-column align-items-start"
+       [class.active]="item === selectedItem"
+       (click)="selectItem(item)">
+      <div class="d-flex w-100 justify-content-between">
+        <span><i class="fa fa-user-circle-o fa-2x"></i></span>
+        <h4>
+          {{ item }}
+        </h4>
+      </div>
+    </a>
+  </div>
+</div>

@@ -1,0 +1,12 @@
+<div class="row content">
+  <div class="col-3">
+    <app-list (itemEvent)="selectedItem = $event"></app-list>
+  </div>
+  <div class="col-9">
+    <div *ngIf="selectedItem">
+      <app-detail [item]="selectedItem"></app-detail>
+    </div>
+  </div>
+</div>
+
+

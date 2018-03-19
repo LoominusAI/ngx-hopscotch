@@ -1,1 +1,1 @@
-# ngx-bootstrap
+# ngx-hopscotch

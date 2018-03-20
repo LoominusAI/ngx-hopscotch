@@ -56,14 +56,17 @@ export class HopscotchService {
         } else {
           if (options && _.includes(stepNums, options.stepNum)) {
             if (options.onNext) {
-              this._tour.steps[options.stepNum].onNext = options.onNext;
               this._tour.steps[options.stepNum].multipage = true;
+              this._tour.steps[options.stepNum].onNext = () => {
+                options.onNext();
+                hopscotch.showStep(options.stepNum + 1);
+              };
             }
             if (options.onPrev) {
               this._tour.steps[options.stepNum].onPrev = () => {
                 options.onPrev();
                 // Reset the tour to the previous step.
-                hopscotch.startTour(this._tour, options.stepNum - 1);
+                hopscotch.showStep(options.stepNum - 1);
               }
             }
             const requestedState = `${this._tour.id}:${options.stepNum}`;

@@ -14,10 +14,21 @@ export class SiteComponent implements OnInit, AfterViewInit, OnDestroy {
               private _router: Router,
               private _hopscotchService: HopscotchService) { }
 
-  public ngOnInit(): void {}
+  public ngOnInit(): void {
+    this._hopscotchService.configure([
+      {
+        stepIndex: 0,
+        stepDef: {
+          onNext: () => {
+            this._router.navigate(['./home'], { relativeTo: this._route });
+          }
+        }
+      }
+    ]);
+  }
 
   public ngAfterViewInit(): void {
-    this._hopscotchService.ready();
+    this._hopscotchService.init();
   }
 
   public ngOnDestroy(): void {
@@ -29,12 +40,7 @@ export class SiteComponent implements OnInit, AfterViewInit, OnDestroy {
     this._router.navigateByUrl('/site/home').then(() => {
       this._router.navigateByUrl(`/site`)
         .then(() => {
-          this._hopscotchService.ready({
-            stepNum: 0,
-            onNext: () => {
-              this._router.navigate(['./home'], { relativeTo: this._route });
-            }
-          });
+          this._hopscotchService.step(0);
         })
     })
   }

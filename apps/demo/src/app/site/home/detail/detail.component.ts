@@ -18,8 +18,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
   public ngOnInit(): void {}
 
   public ngAfterViewInit(): void {
-    this._hopscotchService.ready({
-      stepNum: 2,
+    this._hopscotchService.step(2, {
       onPrev: () => {
         this._router.navigateByUrl('/site')
           .then(() => this._router.navigateByUrl('/site/home'));

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
 import {HopscotchService} from 'ngx-hopscotch';
 
@@ -7,14 +7,14 @@ import {HopscotchService} from 'ngx-hopscotch';
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
 
   constructor(private _hopscotchService: HopscotchService) {}
 
   public ngOnInit(): void {
-    this._hopscotchService.addSteps([
+    this._hopscotchService.configure([
       {
-        stepNum: 0,
+        stepIndex: 0,
         stepDef: {
           target: 'contact',
           placement: 'left',
@@ -23,7 +23,7 @@ export class AppComponent implements OnInit {
         }
       },
       {
-        stepNum: 1,
+        stepIndex: 1,
         stepDef: {
           target: '.list-group',
           placement: 'right',
@@ -32,7 +32,7 @@ export class AppComponent implements OnInit {
         }
       },
       {
-        stepNum: 2,
+        stepIndex: 2,
         stepDef: {
           target: 'item',
           placement: 'right',
@@ -42,5 +42,9 @@ export class AppComponent implements OnInit {
         }
       }
     ]);
+  }
+
+  public ngOnDestroy(): void {
+    this._hopscotchService.end();
   }
 }

@@ -2,16 +2,11 @@ export { NgxHopscotchModule } from './src/ngx-hopscotch.module';
 export { HopscotchService } from './src/hopscotch.service';
 
 export interface TourStep {
-  stepNum: number;
+  stepIndex: number;
   stepDef: any;
 }
 
-export interface ReadyOptions {
-  stepNum: number;
+export interface StepOptions {
   onNext?: () => void;
   onPrev?: () => void;
-}
-
-export interface RouteOptions {
-  prevPath: string;
 }

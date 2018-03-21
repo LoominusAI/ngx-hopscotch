@@ -22,8 +22,7 @@ export class ListComponent implements OnInit, AfterViewInit {
   }
 
   public ngAfterViewInit(): void {
-    this._hopscotchService.ready({
-      stepNum: 1,
+    this._hopscotchService.step(1, {
       onPrev: () => {
         this._router.navigate(['/site']);
       },

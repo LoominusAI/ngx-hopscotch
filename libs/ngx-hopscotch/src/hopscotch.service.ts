@@ -8,39 +8,49 @@ import 'rxjs/add/operator/takeUntil';
 import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/observable/of';
 
-import {ReadyOptions, TourStep} from '../index';
+import {StepOptions, TourStep} from '../index';
+
+declare interface ReadyOptions {
+  stepIndex: number;
+  stepOptions: StepOptions;
+}
 
 @Injectable()
 export class HopscotchService {
+
   private _tour: any = {
-    id: 'hopscotch-tour'
+    id: 'ngx-hopscotch-tour'
   };
   private _callout: any = {
-    id: 'hopscotch-callout'
+    id: 'ngx-hopscotch-callout'
   };
   private _distinctSteps = {};
-  private _readySubject = new BehaviorSubject<ReadyOptions>({ stepNum: -1, onNext: null });
+  private _readySubject = new BehaviorSubject<ReadyOptions>({ stepIndex: -1, stepOptions: null });
   private _unsubscribeSubject = new Subject<any>();
   private _mgr = hopscotch.getCalloutManager();
 
-  constructor(@Inject('tour') private tour: any, @Inject('callout') private callout: any) {
-    this._tour = Object.assign({}, tour);
-    this._callout = Object.assign({}, callout);
+  constructor(@Inject('tour') private _tour0: any, @Inject('callout') private _callout0: any) {
+    this._tour = _.cloneDeep(_tour0);
+    this._callout = _.cloneDeep(_callout0);
   }
 
-  public addSteps(steps: TourStep[]) {
-    const stepNums = _.orderBy(steps, ['stepNum'], ['asc']).map(step => step.stepNum);
+  public configure(steps: TourStep[]) {
+    const stepIndexes = _.orderBy(steps, ['stepIndex'], ['asc']).map(step => step.stepIndex);
     _.reduce(
       steps,
       (result: any, obj: TourStep, index) => {
-        result[obj.stepNum] = {
-          stepDef: obj.stepDef
+        const original = result[obj.stepIndex];
+        result[obj.stepIndex] = {
+          stepDef: _.cloneDeep(original ? Object.assign({}, original.stepDef, obj.stepDef) : obj.stepDef)
         };
+        if (result[obj.stepIndex].stepDef.onNext) {
+          result[obj.stepIndex].stepDef.multipage = true;
+        }
         return result;
       },
       this._distinctSteps
     );
-    // Order the steps by stepNum.
+    // Order the steps by stepIndex.
     const sortedPairs: any[] = _.chain(this._distinctSteps)
       .toPairs()
       .sortBy(0)
@@ -51,34 +61,27 @@ export class HopscotchService {
       .switchMap(options => Observable.of(options))
       .takeUntil(this._unsubscribeSubject)
       .subscribe((options: ReadyOptions) => {
-        if (_.isNil(options) && !hopscotch.getState() && !this._mgr.getCallout(this._callout.id)) {
-          this._mgr.createCallout(this._callout);
-        } else {
-          if (options && _.includes(stepNums, options.stepNum)) {
-            if (options.onNext) {
-              this._tour.steps[options.stepNum].multipage = true;
-              this._tour.steps[options.stepNum].onNext = () => {
-                options.onNext();
-                hopscotch.showStep(options.stepNum + 1);
-              };
+        if (options && _.includes(stepIndexes, options.stepIndex)) {
+          if (options.stepOptions && options.stepOptions.onNext) {
+            this._tour.steps[options.stepIndex].multipage = true;
+            this._tour.steps[options.stepIndex].onNext = () => {
+              options.stepOptions.onNext();
+              hopscotch.showStep(options.stepIndex + 1);
+            };
+          }
+          if (options.stepOptions && options.stepOptions.onPrev) {
+            this._tour.steps[options.stepIndex].onPrev = () => {
+              options.stepOptions.onPrev();
+              // Reset the tour to the previous step.
+              hopscotch.showStep(options.stepIndex - 1);
             }
-            if (options.onPrev) {
-              this._tour.steps[options.stepNum].onPrev = () => {
-                options.onPrev();
-                // Reset the tour to the previous step.
-                hopscotch.showStep(options.stepNum - 1);
-              }
-            }
-            const requestedState = `${this._tour.id}:${options.stepNum}`;
-            const state = hopscotch.getState();
-            if (options.stepNum === 0) {
-              if (hopscotch.isActive) {
-                hopscotch.endTour();
-              }
+          }
+          const requestedState = `${this._tour.id}:${options.stepIndex}`;
+          const state = hopscotch.getState();
+          if (options.stepIndex === 0 || state === requestedState) {
+            hopscotch.startTour(this._tour, options.stepIndex);
+            if (this._callout && this._mgr.getCallout(this._callout.id)) {
               this._mgr.removeCallout(this._callout.id);
-              hopscotch.startTour(this._tour);
-            } else if (state && state === requestedState) {
-              hopscotch.startTour(this._tour, options.stepNum);
             }
           }
         }
@@ -94,7 +97,20 @@ export class HopscotchService {
     }
   }
 
-  public ready(options?: ReadyOptions): void {
-    this._readySubject.next(options);
+  public init(): void {
+    if (this._tourStarted()) {
+      hopscotch.startTour(this._tour);
+    } else if (this._callout && !this._mgr.getCallout(this._callout.id)) {
+      this._mgr.createCallout(this._callout);
+    }
+  }
+
+  public step(index: number, options?: StepOptions): void {
+    this._readySubject.next({ stepIndex: index, stepOptions: options });
+  }
+
+  private _tourStarted(): boolean {
+    const state = hopscotch.getState();
+    return state && state.indexOf(`${this._tour.id}:`) === 0;
   }
 }

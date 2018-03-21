@@ -18,8 +18,9 @@ export class AppComponent implements OnInit, OnDestroy {
         stepDef: {
           target: 'contact',
           placement: 'left',
-          content: "Thank you for trying the ngx-hopscotch demo.",
+          content: "Thank you for trying the ngx-hopscotch demo. The next step's target doesn't exist yet until you click the Next button.",
           title: "Welcome to ngx-hopscotch demo!",
+          multipage: true
         }
       },
       {
@@ -27,8 +28,9 @@ export class AppComponent implements OnInit, OnDestroy {
         stepDef: {
           target: '.list-group',
           placement: 'right',
-          content: "This step was triggered from the prior step's onNext callback.",
-          title: "Router Navigated Step"
+          content: "This step was triggered from the prior step's onNext callback. The next step's target doesn't exist yet until you click the Next button.",
+          title: "Router Navigated Step",
+          multipage: true
         }
       },
       {
@@ -36,7 +38,7 @@ export class AppComponent implements OnInit, OnDestroy {
         stepDef: {
           target: 'item',
           placement: 'right',
-          content: "This step was triggered from the prior step's onNext callback.",
+          content: "This step was triggered from the prior step's onNext callback. This is the last step, but you can click the Back button to return to the previous step.",
           title: "Auto Selected Item",
           xOffset: 80
         }

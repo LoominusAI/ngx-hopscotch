@@ -43,9 +43,6 @@ export class HopscotchService {
         result[obj.stepIndex] = {
           stepDef: _.cloneDeep(original ? Object.assign({}, original.stepDef, obj.stepDef) : obj.stepDef)
         };
-        if (result[obj.stepIndex].stepDef.onNext) {
-          result[obj.stepIndex].stepDef.multipage = true;
-        }
         return result;
       },
       this._distinctSteps
@@ -63,7 +60,6 @@ export class HopscotchService {
       .subscribe((options: ReadyOptions) => {
         if (options && _.includes(stepIndexes, options.stepIndex)) {
           if (options.stepOptions && options.stepOptions.onNext) {
-            this._tour.steps[options.stepIndex].multipage = true;
             this._tour.steps[options.stepIndex].onNext = () => {
               options.stepOptions.onNext();
               hopscotch.showStep(options.stepIndex + 1);

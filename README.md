@@ -92,7 +92,7 @@ export class AppComponent implements OnInit {
 }
 ```
 
-Optionally, customize your tour steps with onPrev() and onNext() callbacks. There's two ways in which you can add these callbacks to your tour steps.
+Optionally, customize your tour steps with StepOptions callbacks. There's two ways in which you can add these callbacks to your tour steps.
 
 The first way is with the HopscotchService.step() function and this way can be placed in any of the Angular component lifecycle hooks as appropriate for your app. 
 
@@ -165,13 +165,27 @@ In the ngAfterViewInit hook of the latent target's component, you'll need to cal
 
 ## HopscotchService API  
 
-- **configure(TourStep[])** - Call this function in your root AppComponent's ngOnInit hook to define all the steps of your tour. You can also use this function to add onPrev and onNext
+### TourStep
+
+- **stepIndex: number** - Zero-based index step.
+
+- **stepDef: any** - Technically, this can be anything understood by Hopscotch, but for ngx-hopscotch the only callbacks that are supported are onPrev and onNext.
+
+### StepOptions
+
+- **onPrev: () => void** - Handler for a step's Back button.
+
+- **onNext: () => void** - Handler for a step's Next button.
+
+### Functions
+
+- **configure(steps:TourStep[])** - Call this function in your root AppComponent's ngOnInit hook to define all the steps of your tour. You can also use this function to add StepOptions 
 callbacks to your tour steps in any one of your component's lifecycle hooks as appropriate for your app.
 
 - **init()** - Call this function in the ngAfterViewInit hook of the component that contains the target for your callout. If you didn't specify a callout in NgxHopscotchModule.forRoot(), 
 then this function will resume your tour at the current step.
 
-- **step(index)** - Call this function with an index of 0 to start the underlying Hopscotch tour. You'll only need to call this function again for any latent steps in your tour.
+- **step(index:number, options?:StepOptions)** - Call this function with an index of 0 to start the underlying Hopscotch tour. You'll only need to call this function again for any latent steps in your tour.
 
 - **end()** - Stop the underlying Hopscotch tour and release resources.
 

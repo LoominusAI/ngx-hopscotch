@@ -92,7 +92,39 @@ export class AppComponent implements OnInit {
 }
 ```
 
-Call HopscotchService.init() in your "home" component's ngAfterViewInit hook - this component contains the target for your callout.
+Optionally, customize your tour steps with onPrev() and onNext() callbacks. There's two ways in which you can add these callbacks to your tour steps.
+
+The first way is with the HopscotchService.step() function and this way can be placed in any of the Angular component lifecycle hooks as appropriate for your app. 
+
+```typescript
+  this._hopscotchService.step(1, {
+      onPrev: () => {
+        this._router.navigate(['/site']);
+      },
+      onNext: () => {
+        if (this.items) {
+          this.selectItem(this.items[0]);
+        }
+      }
+    });
+```
+
+The other way to add the callbacks is with the HopscotchService.configure() function, and this way should only be done in the ngOnInit hook.
+
+```typescript
+    this._hopscotchService.configure([
+      {
+        stepIndex: 0,
+        stepDef: {
+          onNext: () => {
+            this._router.navigate(['./home'], { relativeTo: this._route });
+          }
+        }
+      }
+    ]);
+```
+
+Call HopscotchService.init() in your "main" component's ngAfterViewInit hook -- this component contains the target for your callout.
 
 ```typescript
   public ngAfterViewInit(): void {
@@ -114,4 +146,32 @@ Create a handler for your "Start Tour" button which calls the step() function to
   }
 ```
 
+Call HopscotchService.end() in your "main" component's ngOnDestroy hook -- again this should be the component that contains the target for your callout.
+
+```typescript
+  public ngOnDestroy(): void {
+    this._hopscotchService.end();
+  }
+```
+
+### Considerations for Latent Targets
+
+When configuring your tour steps, pay close attention to the steps with targets that aren't currently visible - such targets could be part of a lazy loaded component, 
+a conditionally included template by way of the ngIf directive, etc. If such a step exists, then you must add the multipage property to the definition of its **previous** step. 
+For example, consider steps 0 and 1 above - step 0 has its multipage property set because step 1's target appears at a different route, and step 1 has its multipage property set 
+because step 2's target is conditioned on an ngIf.
+
+In the ngAfterViewInit hook of the latent target's component, you'll need to call HopscotchService.step() with the appropriate index to resume the tour.
+
+## HopscotchService API  
+
+- **configure(TourStep[])** - Call this function in your root AppComponent's ngOnInit hook to define all the steps of your tour. You can also use this function to add onPrev and onNext
+callbacks to your tour steps in any one of your component's lifecycle hooks as appropriate for your app.
+
+- **init()** - Call this function in the ngAfterViewInit hook of the component that contains the target for your callout. If you didn't specify a callout in NgxHopscotchModule.forRoot(), 
+then this function will resume your tour at the current step.
+
+- **step(index)** - Call this function with an index of 0 to start the underlying Hopscotch tour. You'll only need to call this function again for any latent steps in your tour.
+
+- **end()** - Stop the underlying Hopscotch tour and release resources.
 

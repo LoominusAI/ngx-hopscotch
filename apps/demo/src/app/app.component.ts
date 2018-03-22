@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
 import {HopscotchService} from 'ngx-hopscotch';
 
@@ -7,7 +7,7 @@ import {HopscotchService} from 'ngx-hopscotch';
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.css']
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit {
 
   constructor(private _hopscotchService: HopscotchService) {}
 
@@ -44,9 +44,5 @@ export class AppComponent implements OnInit, OnDestroy {
         }
       }
     ]);
-  }
-
-  public ngOnDestroy(): void {
-    this._hopscotchService.end();
   }
 }

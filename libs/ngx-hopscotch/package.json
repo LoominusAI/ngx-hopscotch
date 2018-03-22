@@ -1,9 +1,10 @@
 {
   "$schema": "../../node_modules/ng-packagr/package.schema.json",
   "name": "ngx-hopscotch",
-  "version": "0.1.8",
-  "license": "MIT",
+  "version": "0.1.10",
+  "license": "Apache-2.0",
   "private": true,
+  "readme": "README.md",
   "peerDependencies": {
     "@angular/common": "^5.1.0",
     "@angular/core": "^5.1.0",
@@ -14,6 +15,7 @@
   "ngPackage": {
     "lib": {
       "entryFile": "public_api.ts",
+      "licensePath": "../../LICENSE",
       "umdModuleIds": {
         "lodash": "_",
         "hopscotch": "hopscotch"

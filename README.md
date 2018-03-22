@@ -154,6 +154,8 @@ Call HopscotchService.end() in your "main" component's ngOnDestroy hook -- again
   }
 ```
 
+Don't forget to include the Hopscotch styles somewhere in your Angular project.
+
 ### Considerations for Latent Targets
 
 When configuring your tour steps, pay close attention to the steps with targets that aren't currently visible - such targets could be part of a lazy loaded component, 
@@ -189,3 +191,14 @@ then this function will resume your tour at the current step.
 
 - **end()** - Stop the underlying Hopscotch tour and release resources.
 
+## Demo
+
+```bash
+git clone https://github.com/LoominusAI/ngx-hopscotch.git
+cd ngx-hopscotch
+npm install or yarn install
+npm run build:lib
+ng serve --app demo-packaged
+```
+
+Open a browser to ```http://localhost:4200```.

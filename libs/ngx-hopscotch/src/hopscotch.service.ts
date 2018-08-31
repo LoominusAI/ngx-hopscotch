@@ -1,12 +1,8 @@
-import { Inject, Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
+import {Inject, Injectable} from '@angular/core';
+import {switchMap, takeUntil} from 'rxjs/operators';
+import {BehaviorSubject, of, Subject} from 'rxjs';
 import _ from 'lodash';
 import hopscotch from 'hopscotch';
-import 'rxjs/add/operator/takeUntil';
-import 'rxjs/add/operator/switchMap';
-import 'rxjs/add/observable/of';
 
 import {StepOptions, TourStep} from '../index';
 
@@ -54,9 +50,9 @@ export class HopscotchService {
       .value();
     this._tour.steps = _.values(_.fromPairs(sortedPairs)).map(v => v.stepDef);
     this._readySubject
-      .asObservable()
-      .switchMap(options => Observable.of(options))
-      .takeUntil(this._unsubscribeSubject)
+      .asObservable().pipe(
+       switchMap(options => of(options))
+      , takeUntil(this._unsubscribeSubject))
       .subscribe((options: ReadyOptions) => {
         if (options && _.includes(stepIndexes, options.stepIndex)) {
           if (options.stepOptions && options.stepOptions.onNext) {
